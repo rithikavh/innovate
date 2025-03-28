@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Content Licensing Blockchain</title>
+</head>
+<body>
+    <h1>Content Licensing Blockchain</h1>
+
+    <h2>Add License</h2>
+    <form id="licenseForm">
+        <label for="content_id">Content ID:</label><br>
+        <input type="text" id="content_id" name="content_id"><br><br>
+        <label for="license_details">License Details:</label><br>
+        <textarea id="license_details" name="license_details"></textarea><br><br>
+        <button type="button" onclick="addLicense()">Add License</button>
+    </form>
+
+    <h2>Blockchain</h2>
+    <pre id="blockchainDisplay">{{ blockchain|tojson(indent=2) }}</pre>
+
+    <button onclick="verifyChain()">Verify Chain</button>
+    <button onclick="getChain()">Get Chain</button>
+
+    <script>
+        function addLicense() {
+            const contentId = document.getElementById('content_id').value;
+            const licenseDetails = document.getElementById('license_details').value;
+            const formData = new FormData();
+            formData.append('content_id', contentId);
+            formData.append('license_details', licenseDetails);
+
+            fetch('/add_license', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('License added to blockchain!');
+                location.reload();
+            });
+        }
+        function verifyChain(){
+            fetch('/verify_chain')
+            .then(response => response.json())
+            .then(data=>{
+                alert('Chain valid:' + data.is_valid);
+            });
+        }
+        function getChain(){
+          fetch('/get_chain')
+          .then(response => response.json())
+          .then(data =>{
+            document.getElementById('blockchainDisplay').textContent = JSON.stringify(data.chain, null, 2);
+          })
+        }
+    </script>
+</body>
+</html>
